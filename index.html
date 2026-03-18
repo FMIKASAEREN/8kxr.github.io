@@ -3,211 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>8KXR - 赛博朋克个人主页</title>
+    <title>8KXR - 渐变动效主页</title>
     <style>
-        /* 全局样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Consolas', monospace;
+            scroll-behavior: smooth;
         }
         
-        /* 背景粒子 + 霓虹效果 */
         body {
-            background: #000;
-            overflow-x: hidden;
-            position: relative;
-        }
-        #particles-js {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            transition: background 1s ease;
         }
         
-        /* 主体容器 */
+        body.scrolled {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
         .container {
-            position: relative;
-            z-index: 1;
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 50px 20px;
-            color: #fff;
+            padding: 80px 20px;
         }
         
-        /* 霓虹标题 */
-        .title {
-            font-size: 4rem;
+        .header {
             text-align: center;
             margin-bottom: 80px;
-            background: linear-gradient(90deg, #0ff, #f0f, #ff0);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: neon 3s linear infinite;
-            position: relative;
-        }
-        @keyframes neon {
-            to { background-position: 200% center; }
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeIn 1s ease forwards;
         }
         
-        /* 卡片动效 */
-        .card-container {
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
         }
-        .card {
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid #0ff;
-            padding: 30px;
-            border-radius: 10px;
-            transition: all 0.5s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: all 0.5s ease;
-        }
-        .card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 0 30px #0ff, 0 0 60px #f0f;
-        }
-        .card:hover::before {
-            left: 100%;
-        }
         
-        /* 按钮动效 */
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 30px;
-            background: transparent;
-            border: 1px solid #ff0;
-            color: #ff0;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
+        .gallery-item {
+            border-radius: 15px;
             overflow: hidden;
-        }
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255,255,0,0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             transition: all 0.5s ease;
-        }
-        .btn:hover::after {
-            width: 300px;
-            height: 300px;
             opacity: 0;
-        }
-        .btn:hover {
-            background: #ff0;
-            color: #000;
-            box-shadow: 0 0 15px #ff0;
+            transform: scale(0.8);
+            animation: popIn 0.8s ease forwards;
         }
         
-        /* 鼠标跟随 */
-        #cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 1px solid #0ff;
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            mix-blend-mode: difference;
-            transition: all 0.1s ease;
+        .gallery-item:nth-child(1) { animation-delay: 0.2s; }
+        .gallery-item:nth-child(2) { animation-delay: 0.4s; }
+        .gallery-item:nth-child(3) { animation-delay: 0.6s; }
+        .gallery-item:nth-child(4) { animation-delay: 0.8s; }
+        
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-item .content {
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+        
+        .gallery-item h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .gallery-item p {
+            opacity: 0.8;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <!-- 鼠标跟随元素 -->
-    <div id="cursor"></div>
-    
-    <!-- 粒子背景 -->
-    <div id="particles-js"></div>
-    
     <div class="container">
-        <h1 class="title">8KXR's Homepage</h1>
+        <div class="header">
+            <h1>8KXR 的渐变主页</h1>
+            <p>滚动页面查看更多动效，hover 图片有惊喜～</p>
+        </div>
         
-        <div class="card-container">
-            <div class="card">
-                <h2>✨ 炫酷动效</h2>
-                <p>包含霓虹渐变、鼠标跟随、卡片悬浮、粒子背景等多种动效</p>
-                <button class="btn">点击试试</button>
+        <div class="gallery">
+            <div class="gallery-item">
+                <img src="https://picsum.photos/seed/1/800/600" alt="示例图片1">
+                <div class="content">
+                    <h3>动效卡片 1</h3>
+                    <p>图片悬浮缩放 + 卡片上浮阴影</p>
+                </div>
             </div>
-            <div class="card">
-                <h2>🚀 适配移动端</h2>
-                <p>响应式设计，手机/平板/电脑都能完美显示</p>
-                <button class="btn">查看详情</button>
+            <div class="gallery-item">
+                <img src="https://picsum.photos/seed/2/800/600" alt="示例图片2">
+                <div class="content">
+                    <h3>动效卡片 2</h3>
+                    <p>延迟入场动画 + 平滑过渡</p>
+                </div>
             </div>
-            <div class="card">
-                <h2>🎯 自定义简单</h2>
-                <p>修改文字/图片/颜色即可变成你的专属页面</p>
-                <button class="btn">立即修改</button>
+            <div class="gallery-item">
+                <img src="https://picsum.photos/seed/3/800/600" alt="示例图片3">
+                <div class="content">
+                    <h3>动效卡片 3</h3>
+                    <p>滚动背景渐变 + 文字发光</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://picsum.photos/seed/4/800/600" alt="示例图片4">
+                <div class="content">
+                    <h3>动效卡片 4</h3>
+                    <p>平滑滚动 + 响应式布局</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 粒子动画脚本 -->
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // 粒子背景配置
-        particlesJS('particles-js', {
-            particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
-                color: { value: ['#0ff', '#f0f', '#ff0'] },
-                shape: { type: 'circle' },
-                opacity: { value: 0.5, random: true },
-                size: { value: 3, random: true },
-                line_linked: { enable: true, distance: 150, color: '#0ff', opacity: 0.2, width: 1 },
-                move: { enable: true, speed: 1, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
-            },
-            interactivity: {
-                detect_on: 'canvas',
-                events: {
-                    onhover: { enable: true, mode: 'grab' },
-                    onclick: { enable: true, mode: 'push' },
-                    resize: true
-                },
-                modes: {
-                    grab: { distance: 140, line_linked: { opacity: 1 } },
-                    push: { particles_nb: 4 }
-                }
-            },
-            retina_detect: true
-        });
-
-        // 鼠标跟随效果
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
-
-        // 按钮点击动效
-        const btns = document.querySelectorAll('.btn');
-        btns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                alert('动效触发成功！替换成你的功能吧～');
-            });
+        // 滚动改变背景渐变
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            if (scrollY > 200) {
+                document.body.classList.add('scrolled');
+            } else {
+                document.body.classList.remove('scrolled');
+            }
         });
     </script>
 </body>
