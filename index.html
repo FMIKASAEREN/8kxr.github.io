@@ -68,27 +68,10 @@
             letter-spacing: 5px;
             text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
         }
-        .title-particle {
-            color: #fff;
-            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
-        }
-        .title-parallax {
-            color: #fff;
-            text-shadow: 0 0 15px #f0f, 0 0 30px #f0f;
-            transform: translateZ(10px);
-        }
 
-        /* 动效关键帧 */
+        /* 动效关键帧（仅保留霓虹/渐变/3D） */
         @keyframes neon-flow { to { background-position: 200% center; } }
         @keyframes gradient-flow { to { background-position: 300% center; } }
-        @keyframes waterfall {
-            0% { transform: translateY(-50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes loading {
-            0% { clip-path: inset(0 100% 0 0); }
-            100% { clip-path: inset(0 0 0 0); }
-        }
         @keyframes 3d-hover {
             0% { transform: rotateY(0) rotateX(0); }
             50% { transform: rotateY(15deg) rotateX(10deg); }
@@ -109,7 +92,7 @@
             overflow: hidden;
             transition: all 0.5s ease;
         }
-        /* 不同模块的基础样式 */
+        /* 不同模块的基础样式（固定特效） */
         .module-neon {
             border: 2px solid #0ff;
             background: rgba(0, 0, 0, 0.7);
@@ -124,52 +107,70 @@
             transform-style: preserve-3d;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
         }
-        .module-particle {
-            border: 1px solid #f0f;
-            background: rgba(0, 0, 0, 0.6);
-            box-shadow: 0 0 25px rgba(255, 0, 255, 0.2);
-        }
-        .module-parallax {
-            background: rgba(0, 0, 0, 0.7);
-            box-shadow: 0 0 30px rgba(255, 255, 0, 0.2);
-        }
 
-        /* 模块标题（点击切换页面标题） */
-        .module-title {
-            padding: 20px 30px;
-            font-size: 2.5rem;
+        /* 模块封面（默认显示） */
+        .module-cover {
+            display: flex;
+            gap: 30px;
+            padding: 30px;
             cursor: pointer;
+            align-items: center;
+        }
+        .module-cover-img {
+            width: 300px;
+            height: 200px;
+            border-radius: 15px;
+            object-fit: cover;
+            flex-shrink: 0;
+            transition: all 0.5s ease;
+        }
+        .module-cover-text {
+            flex: 1;
+        }
+        .module-cover-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
             transition: all 0.3s ease;
         }
-        .module-title-neon {
+        .module-cover-text p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            line-height: 1.6;
+            max-width: 800px;
+        }
+        /* 模块封面标题样式 */
+        .cover-title-neon {
             color: #0ff;
             text-shadow: 0 0 10px #0ff;
         }
-        .module-title-gradient {
+        .cover-title-gradient {
             color: #fff;
             text-shadow: 0 0 15px #fff;
         }
-        .module-title-3d {
+        .cover-title-3d {
             color: #ff0;
             text-shadow: 0 0 10px #ff0;
             transform: translateZ(5px);
         }
-        .module-title-particle {
-            color: #f0f;
-            text-shadow: 0 0 10px #f0f;
-        }
-        .module-title-parallax {
-            color: #fff;
-            text-shadow: 0 0 10px #ff0;
-        }
 
-        /* 小节容器 */
+        /* 小节容器（默认隐藏，点击展开） */
         .section-list {
-            display: grid;
+            display: none; /* 默认隐藏 */
             grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
             gap: 30px;
-            padding: 20px 30px;
+            padding: 20px 30px 30px;
         }
+        /* 展开状态 */
+        .section-list.show {
+            display: grid;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 小节样式 */
         .section-item {
             display: flex;
             gap: 20px;
@@ -180,7 +181,18 @@
             transition: all 0.5s ease;
             overflow: hidden;
         }
-        .section-item:hover {
+        /* 小节固定特效（和模块绑定） */
+        .section-item-neon:hover {
+            box-shadow: 0 0 15px #0ff, 0 0 30px #0ff;
+            border: 1px solid #0ff;
+            transform: translateY(-5px);
+        }
+        .section-item-gradient:hover {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            transform: translateY(-5px);
+        }
+        .section-item-3d:hover {
+            animation: 3d-hover 1s ease infinite;
             transform: translateY(-5px);
         }
 
@@ -192,6 +204,9 @@
             object-fit: cover;
             flex-shrink: 0;
             transition: all 0.5s ease;
+        }
+        .section-item:hover .section-img {
+            transform: scale(1.1);
         }
 
         /* 小节文字 */
@@ -209,24 +224,6 @@
             opacity: 0.8;
             line-height: 1.6;
         }
-
-        /* 小节hover特效类（JS动态添加） */
-        .effect-waterfall {
-            animation: waterfall 0.8s ease forwards;
-        }
-        .effect-loading {
-            animation: loading 1s ease forwards;
-        }
-        .effect-3d {
-            animation: 3d-hover 1s ease infinite;
-        }
-        .effect-neon {
-            box-shadow: 0 0 15px #0ff, 0 0 30px #0ff;
-            border: 1px solid #0ff;
-        }
-        .effect-gradient {
-            background: linear-gradient(45deg, #f093fb, #f5576c);
-        }
     </style>
 </head>
 <body>
@@ -240,15 +237,23 @@
 
     <!-- 模块容器（可自定义排序：调整module的顺序即可） -->
     <div class="module-container">
-        <!-- 1. 霓虹模块（可删除/移动） -->
+        <!-- 1. 霓虹模块（固定霓虹特效） -->
         <div class="module module-neon" data-module-type="neon">
-            <div class="module-title module-title-neon" data-title="霓虹特效模块">霓虹特效模块</div>
+            <!-- 模块封面（默认显示） -->
+            <div class="module-cover">
+                <img class="module-cover-img" src="https://picsum.photos/seed/neon-cover/600/400" alt="霓虹模块封面">
+                <div class="module-cover-text">
+                    <h2 class="cover-title-neon">霓虹特效模块</h2>
+                    <p>霓虹特效基于CSS渐变和阴影实现，支持自定义颜色和动画速度，模块内所有小节hover时会触发霓虹光晕特效，点击封面可展开/收起小节列表。</p>
+                </div>
+            </div>
+            <!-- 小节列表（默认隐藏） -->
             <div class="section-list">
-                <!-- 小节1（可增删） -->
-                <div class="section-item" 
+                <!-- 小节1 -->
+                <div class="section-item section-item-neon" 
                      data-action="text" 
                      data-text-original="霓虹小节1：左侧是赛博朋克风格图片，右侧是霓虹特效介绍。" 
-                     data-text-change="霓虹小节1-切换后：霓虹特效基于CSS渐变和阴影实现，支持自定义颜色和动画速度。"
+                     data-text-change="霓虹小节1-切换后：霓虹特效通过text-shadow和box-shadow实现，可调整光晕大小和颜色。"
                      data-img="https://picsum.photos/seed/neon1/400/300">
                     <img class="section-img" src="https://picsum.photos/seed/neon1/400/300" alt="霓虹小节1">
                     <div class="section-text">
@@ -256,8 +261,8 @@
                         <p>霓虹小节1：左侧是赛博朋克风格图片，右侧是霓虹特效介绍。</p>
                     </div>
                 </div>
-                <!-- 小节2（可增删） -->
-                <div class="section-item" 
+                <!-- 小节2 -->
+                <div class="section-item section-item-neon" 
                      data-action="link" 
                      data-link="https://github.com/8KXR"
                      data-img="https://picsum.photos/seed/neon2/400/300">
@@ -270,15 +275,23 @@
             </div>
         </div>
 
-        <!-- 2. 渐变模块（可删除/移动） -->
+        <!-- 2. 渐变模块（固定渐变特效） -->
         <div class="module module-gradient" data-module-type="gradient">
-            <div class="module-title module-title-gradient" data-title="渐变特效模块">渐变特效模块</div>
+            <!-- 模块封面（默认显示） -->
+            <div class="module-cover">
+                <img class="module-cover-img" src="https://picsum.photos/seed/gradient-cover/600/400" alt="渐变模块封面">
+                <div class="module-cover-text">
+                    <h2 class="cover-title-gradient">渐变特效模块</h2>
+                    <p>渐变特效包含线性渐变和径向渐变，模块内所有小节hover时会触发渐变背景切换，点击封面可展开/收起小节列表，支持多色过渡和动态流动效果。</p>
+                </div>
+            </div>
+            <!-- 小节列表（默认隐藏） -->
             <div class="section-list">
-                <!-- 小节1（可增删） -->
-                <div class="section-item" 
+                <!-- 小节1 -->
+                <div class="section-item section-item-gradient" 
                      data-action="text" 
                      data-text-original="渐变小节1：线性渐变+径向渐变组合，支持多色过渡。" 
-                     data-text-change="渐变小节1-切换后：渐变背景可通过background-size实现动态流动效果，适配所有设备。"
+                     data-text-change="渐变小节1-切换后：渐变背景可通过background-size实现动态流动，适配所有设备分辨率。"
                      data-img="https://picsum.photos/seed/gradient1/400/300">
                     <img class="section-img" src="https://picsum.photos/seed/gradient1/400/300" alt="渐变小节1">
                     <div class="section-text">
@@ -289,12 +302,20 @@
             </div>
         </div>
 
-        <!-- 3. 3D模块（可删除/移动） -->
+        <!-- 3. 3D模块（固定3D特效） -->
         <div class="module module-3d" data-module-type="3d">
-            <div class="module-title module-title-3d" data-title="3D特效模块">3D特效模块</div>
+            <!-- 模块封面（默认显示） -->
+            <div class="module-cover">
+                <img class="module-cover-img" src="https://picsum.photos/seed/3d-cover/600/400" alt="3D模块封面">
+                <div class="module-cover-text">
+                    <h2 class="cover-title-3d">3D特效模块</h2>
+                    <p>3D特效基于CSS 3D变换实现，模块内所有小节hover时会触发3D旋转动画，点击封面可展开/收起小节列表，支持自定义旋转角度和速度。</p>
+                </div>
+            </div>
+            <!-- 小节列表（默认隐藏） -->
             <div class="section-list">
-                <!-- 小节1（可增删） -->
-                <div class="section-item" 
+                <!-- 小节1 -->
+                <div class="section-item section-item-3d" 
                      data-action="link" 
                      data-link="https://8kxr.qzz.io"
                      data-img="https://picsum.photos/seed/3d1/400/300">
@@ -302,44 +323,6 @@
                     <div class="section-text">
                         <h3>3D小节1</h3>
                         <p>3D小节1：点击跳转到自定义域名主页，体验3D视差效果。</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. 粒子模块（可删除/移动） -->
-        <div class="module module-particle" data-module-type="particle">
-            <div class="module-title module-title-particle" data-title="粒子特效模块">粒子特效模块</div>
-            <div class="section-list">
-                <!-- 小节1（可增删） -->
-                <div class="section-item" 
-                     data-action="text" 
-                     data-text-original="粒子小节1：基于particles.js实现，支持自定义粒子数量、颜色、运动速度。" 
-                     data-text-change="粒子小节1-切换后：粒子背景可通过JS配置交互事件，如鼠标hover吸引粒子、点击生成粒子爆炸效果。"
-                     data-img="https://picsum.photos/seed/particle1/400/300">
-                    <img class="section-img" src="https://picsum.photos/seed/particle1/400/300" alt="粒子小节1">
-                    <div class="section-text">
-                        <h3>粒子小节1</h3>
-                        <p>粒子小节1：基于particles.js实现，支持自定义粒子数量、颜色、运动速度。</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. 视差模块（可删除/移动） -->
-        <div class="module module-parallax" data-module-type="parallax">
-            <div class="module-title module-title-parallax" data-title="视差特效模块">视差特效模块</div>
-            <div class="section-list">
-                <!-- 小节1（可增删） -->
-                <div class="section-item" 
-                     data-action="text" 
-                     data-text-original="视差小节1：背景与前景滚动速度不同，营造空间深度感。" 
-                     data-text-change="视差小节1-切换后：视差效果可通过scroll事件动态调整元素translateZ值，支持多层级视差。"
-                     data-img="https://picsum.photos/seed/parallax1/400/300">
-                    <img class="section-img" src="https://picsum.photos/seed/parallax1/400/300" alt="视差小节1">
-                    <div class="section-text">
-                        <h3>视差小节1</h3>
-                        <p>视差小节1：背景与前景滚动速度不同，营造空间深度感。</p>
                     </div>
                 </div>
             </div>
@@ -378,55 +361,42 @@
             parallaxBg.style.transform = `translateZ(-5px) scale(1.2) translateY(${scrollY * 0.3}px)`;
         });
 
-        // 3. 模块标题点击：切换页面主标题（不跳转）
-        const moduleTitles = document.querySelectorAll('.module-title');
+        // 3. 模块封面点击：展开/收起小节 + 切换页面标题
+        const moduleCovers = document.querySelectorAll('.module-cover');
         const pageMainTitle = document.getElementById('pageMainTitle');
-        moduleTitles.forEach(title => {
-            title.addEventListener('click', () => {
-                // 切换标题文字
-                pageMainTitle.textContent = title.dataset.title;
-                // 切换标题样式
-                const moduleType = title.closest('.module').dataset.moduleType;
+        
+        moduleCovers.forEach(cover => {
+            const module = cover.closest('.module');
+            const sectionList = module.querySelector('.section-list');
+            const moduleType = module.dataset.moduleType;
+            const moduleTitle = cover.querySelector('h2').textContent;
+
+            // 点击封面：展开/收起小节
+            cover.addEventListener('click', () => {
+                // 切换小节列表显示/隐藏
+                sectionList.classList.toggle('show');
+                
+                // 切换页面主标题样式和文字
+                pageMainTitle.textContent = moduleTitle;
                 pageMainTitle.className = '';
                 pageMainTitle.classList.add('page-title', `title-${moduleType}`);
-                // 丝滑滚动到页面顶部
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // 丝滑滚动到模块顶部
+                module.scrollIntoView({ behavior: 'smooth' });
             });
         });
 
-        // 4. 小节hover：随机添加特效
+        // 4. 小节点击交互（跳转/切换文字）
         const sectionItems = document.querySelectorAll('.section-item');
-        const effects = ['effect-waterfall', 'effect-loading', 'effect-3d', 'effect-neon', 'effect-gradient'];
         sectionItems.forEach(item => {
-            // 存储原始样式，用于重置
-            let originalClasses = item.className;
-            
-            // hover时添加随机特效
-            item.addEventListener('mouseenter', () => {
-                // 随机选一个特效
-                const randomEffect = effects[Math.floor(Math.random() * effects.length)];
-                item.classList.add(randomEffect);
-                // 图片放大特效
-                const img = item.querySelector('.section-img');
-                img.style.transform = 'scale(1.1)';
-            });
-
-            // 离开时重置特效
-            item.addEventListener('mouseleave', () => {
-                item.className = originalClasses;
-                const img = item.querySelector('.section-img');
-                img.style.transform = 'scale(1)';
-            });
-
-            // 点击小节：执行跳转/改文字
             item.addEventListener('click', () => {
                 const action = item.dataset.action;
                 const textEl = item.querySelector('.section-text p');
                 
                 if (action === 'link') {
-                    // 跳转链接
+                    // 跳转链接（新标签页）
                     const link = item.dataset.link;
-                    window.open(link, '_blank'); // 新标签页打开
+                    window.open(link, '_blank');
                 } else if (action === 'text') {
                     // 切换文字
                     const originalText = item.dataset.textOriginal;
@@ -440,23 +410,24 @@
             });
         });
 
-        // 5. 新增小节的辅助函数（方便你快速添加）
+        // 5. 新增小节的辅助函数（方便快速添加）
         function addSectionItem(moduleSelector, options) {
             /* 
             使用示例：
             addSectionItem('.module-neon', {
-                action: 'text',
-                textOriginal: '新小节原始文字',
-                textChange: '新小节切换后文字',
-                img: 'https://picsum.photos/seed/new1/400/300',
-                title: '新小节标题'
+                action: 'link',
+                link: 'https://www.baidu.com',
+                textOriginal: '新霓虹小节：点击跳转到百度',
+                img: 'https://picsum.photos/seed/neon3/400/300',
+                title: '新霓虹小节'
             });
             */
             const module = document.querySelector(moduleSelector);
             const sectionList = module.querySelector('.section-list');
+            const moduleType = module.dataset.moduleType;
             
             const newItem = document.createElement('div');
-            newItem.className = 'section-item';
+            newItem.className = `section-item section-item-${moduleType}`;
             newItem.dataset.action = options.action;
             
             if (options.action === 'text') {
@@ -476,18 +447,7 @@
                 </div>
             `;
             
-            // 添加交互事件（复用现有逻辑）
-            newItem.addEventListener('mouseenter', () => {
-                const randomEffect = effects[Math.floor(Math.random() * effects.length)];
-                newItem.classList.add(randomEffect);
-                newItem.querySelector('.section-img').style.transform = 'scale(1.1)';
-            });
-            
-            newItem.addEventListener('mouseleave', () => {
-                newItem.className = 'section-item';
-                newItem.querySelector('.section-img').style.transform = 'scale(1)';
-            });
-            
+            // 小节点击事件
             newItem.addEventListener('click', () => {
                 const textEl = newItem.querySelector('.section-text p');
                 if (options.action === 'link') {
