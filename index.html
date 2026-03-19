@@ -3,222 +3,506 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>8KXR - 3D 交互主页</title>
+    <title>8KXR - 全动效整合主页</title>
     <style>
+        /* 全局基础样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            perspective: 1000px;
+            scroll-behavior: smooth; /* 丝滑滚动 */
+            font-family: 'Consolas', 'Microsoft Yahei', sans-serif;
         }
-        
+
+        /* 视差背景 + 粒子容器 */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #121212;
-            color: white;
-            min-height: 100vh;
+            background: #000;
+            color: #fff;
             overflow-x: hidden;
-        }
-        
-        .parallax-container {
             position: relative;
-            height: 100vh;
-            overflow: hidden;
         }
-        
-        .parallax-bg {
-            position: absolute;
+        #parallax-bg {
+            position: fixed;
             top: 0;
             left: 0;
             width: 120%;
             height: 120%;
-            background: url('https://picsum.photos/seed/3d/1920/1080') center/cover;
-            transform: translateZ(-10px) scale(2);
-            opacity: 0.2;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            transform: translateZ(-5px) scale(1.2);
+            z-index: -2;
+            transition: background 1s ease;
         }
-        
-        .hero {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 2;
-        }
-        
-        .hero h1 {
-            font-size: 5rem;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #2196F3, 0 0 40px #2196F3;
-            transform: translateZ(20px);
-        }
-        
-        .hero p {
-            font-size: 1.5rem;
-            opacity: 0.8;
-            transform: translateZ(10px);
-        }
-        
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 50px;
-            padding: 100px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .card {
-            height: 400px;
-            background: linear-gradient(45deg, #1e1e1e, #2d2d2d);
-            border-radius: 20px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: all 0.5s ease;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-        
-        .card:hover {
-            transform: rotateY(15deg) rotateX(10deg) translateY(-20px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.7), 0 0 50px rgba(33, 150, 243, 0.3);
-        }
-        
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+        #particles-js {
+            position: fixed;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(33, 150, 243, 0.2));
-            border-radius: 20px;
-            transform: translateZ(1px);
+            z-index: -1;
+            opacity: 0.8;
         }
-        
-        .card-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) translateZ(30px);
+
+        /* 页面标题（丝滑切换） */
+        .page-title {
             text-align: center;
+            padding: 80px 20px 40px;
+            font-size: 4rem;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        /* 不同模块的标题样式 */
+        .title-neon {
+            background: linear-gradient(90deg, #0ff, #f0f, #ff0);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: neon-flow 3s linear infinite;
+        }
+        .title-gradient {
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-flow 4s ease infinite;
+        }
+        .title-3d {
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+        }
+        .title-particle {
+            color: #fff;
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
+        }
+        .title-parallax {
+            color: #fff;
+            text-shadow: 0 0 15px #f0f, 0 0 30px #f0f;
+            transform: translateZ(10px);
+        }
+
+        /* 动效关键帧 */
+        @keyframes neon-flow { to { background-position: 200% center; } }
+        @keyframes gradient-flow { to { background-position: 300% center; } }
+        @keyframes waterfall {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes loading {
+            0% { clip-path: inset(0 100% 0 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+        @keyframes 3d-hover {
+            0% { transform: rotateY(0) rotateX(0); }
+            50% { transform: rotateY(15deg) rotateX(10deg); }
+            100% { transform: rotateY(0) rotateX(0); }
+        }
+
+        /* 模块容器（可自定义排序） */
+        .module-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .module {
+            margin-bottom: 80px;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        /* 不同模块的基础样式 */
+        .module-neon {
+            border: 2px solid #0ff;
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        .module-gradient {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            box-shadow: 0 0 30px rgba(118, 75, 162, 0.5);
+        }
+        .module-3d {
+            background: rgba(0, 0, 0, 0.8);
+            transform-style: preserve-3d;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        .module-particle {
+            border: 1px solid #f0f;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.2);
+        }
+        .module-parallax {
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.2);
+        }
+
+        /* 模块标题（点击切换页面标题） */
+        .module-title {
+            padding: 20px 30px;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .module-title-neon {
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff;
+        }
+        .module-title-gradient {
+            color: #fff;
+            text-shadow: 0 0 15px #fff;
+        }
+        .module-title-3d {
+            color: #ff0;
+            text-shadow: 0 0 10px #ff0;
+            transform: translateZ(5px);
+        }
+        .module-title-particle {
+            color: #f0f;
+            text-shadow: 0 0 10px #f0f;
+        }
+        .module-title-parallax {
+            color: #fff;
+            text-shadow: 0 0 10px #ff0;
+        }
+
+        /* 小节容器 */
+        .section-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            padding: 20px 30px;
+        }
+        .section-item {
+            display: flex;
+            gap: 20px;
             padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.5s ease;
+            overflow: hidden;
         }
-        
-        .card-content h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #2196F3;
+        .section-item:hover {
+            transform: translateY(-5px);
         }
-        
-        .card-content p {
+
+        /* 小节图片 */
+        .section-img {
+            width: 200px;
+            height: 150px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            transition: all 0.5s ease;
+        }
+
+        /* 小节文字 */
+        .section-text {
+            flex: 1;
+            color: #fff;
+            transition: all 0.5s ease;
+        }
+        .section-text h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .section-text p {
             font-size: 1rem;
             opacity: 0.8;
             line-height: 1.6;
         }
-        
-        .btn-3d {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 15px 40px;
-            background: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 1rem;
-            cursor: pointer;
-            transform: translateZ(10px);
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+
+        /* 小节hover特效类（JS动态添加） */
+        .effect-waterfall {
+            animation: waterfall 0.8s ease forwards;
         }
-        
-        .btn-3d:hover {
-            transform: translateZ(15px) scale(1.05);
-            box-shadow: 0 10px 20px rgba(33, 150, 243, 0.6);
-            background: #1976D2;
+        .effect-loading {
+            animation: loading 1s ease forwards;
+        }
+        .effect-3d {
+            animation: 3d-hover 1s ease infinite;
+        }
+        .effect-neon {
+            box-shadow: 0 0 15px #0ff, 0 0 30px #0ff;
+            border: 1px solid #0ff;
+        }
+        .effect-gradient {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
         }
     </style>
 </head>
 <body>
-    <div class="parallax-container">
-        <div class="parallax-bg"></div>
-        <div class="hero">
-            <h1>3D 交互体验</h1>
-            <p>鼠标 hover 卡片查看 3D 翻转效果</p>
-        </div>
-    </div>
-    
-    <div class="card-container">
-        <div class="card">
-            <div class="card-content">
-                <h2>3D 卡片翻转</h2>
-                <p>基于 CSS 3D 变换实现的卡片立体翻转效果，hover 时自动旋转并上浮</p>
-                <button class="btn-3d">体验一下</button>
+    <!-- 视差背景 -->
+    <div id="parallax-bg"></div>
+    <!-- 粒子背景 -->
+    <div id="particles-js"></div>
+
+    <!-- 页面标题（丝滑切换） -->
+    <h1 class="page-title title-neon" id="pageMainTitle">8KXR 全动效整合主页</h1>
+
+    <!-- 模块容器（可自定义排序：调整module的顺序即可） -->
+    <div class="module-container">
+        <!-- 1. 霓虹模块（可删除/移动） -->
+        <div class="module module-neon" data-module-type="neon">
+            <div class="module-title module-title-neon" data-title="霓虹特效模块">霓虹特效模块</div>
+            <div class="section-list">
+                <!-- 小节1（可增删） -->
+                <div class="section-item" 
+                     data-action="text" 
+                     data-text-original="霓虹小节1：左侧是赛博朋克风格图片，右侧是霓虹特效介绍。" 
+                     data-text-change="霓虹小节1-切换后：霓虹特效基于CSS渐变和阴影实现，支持自定义颜色和动画速度。"
+                     data-img="https://picsum.photos/seed/neon1/400/300">
+                    <img class="section-img" src="https://picsum.photos/seed/neon1/400/300" alt="霓虹小节1">
+                    <div class="section-text">
+                        <h3>霓虹小节1</h3>
+                        <p>霓虹小节1：左侧是赛博朋克风格图片，右侧是霓虹特效介绍。</p>
+                    </div>
+                </div>
+                <!-- 小节2（可增删） -->
+                <div class="section-item" 
+                     data-action="link" 
+                     data-link="https://github.com/8KXR"
+                     data-img="https://picsum.photos/seed/neon2/400/300">
+                    <img class="section-img" src="https://picsum.photos/seed/neon2/400/300" alt="霓虹小节2">
+                    <div class="section-text">
+                        <h3>霓虹小节2</h3>
+                        <p>霓虹小节2：点击跳转到GitHub仓库，查看更多霓虹特效源码。</p>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="card">
-            <div class="card-content">
-                <h2>视差滚动</h2>
-                <p>背景图片和前景内容不同的滚动速度，营造出深度感和空间感</p>
-                <button class="btn-3d">体验一下</button>
+
+        <!-- 2. 渐变模块（可删除/移动） -->
+        <div class="module module-gradient" data-module-type="gradient">
+            <div class="module-title module-title-gradient" data-title="渐变特效模块">渐变特效模块</div>
+            <div class="section-list">
+                <!-- 小节1（可增删） -->
+                <div class="section-item" 
+                     data-action="text" 
+                     data-text-original="渐变小节1：线性渐变+径向渐变组合，支持多色过渡。" 
+                     data-text-change="渐变小节1-切换后：渐变背景可通过background-size实现动态流动效果，适配所有设备。"
+                     data-img="https://picsum.photos/seed/gradient1/400/300">
+                    <img class="section-img" src="https://picsum.photos/seed/gradient1/400/300" alt="渐变小节1">
+                    <div class="section-text">
+                        <h3>渐变小节1</h3>
+                        <p>渐变小节1：线性渐变+径向渐变组合，支持多色过渡。</p>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="card">
-            <div class="card-content">
-                <h2>光影特效</h2>
-                <p>结合阴影和渐变，打造真实的光影层次，增强 3D 视觉效果</p>
-                <button class="btn-3d">体验一下</button>
+
+        <!-- 3. 3D模块（可删除/移动） -->
+        <div class="module module-3d" data-module-type="3d">
+            <div class="module-title module-title-3d" data-title="3D特效模块">3D特效模块</div>
+            <div class="section-list">
+                <!-- 小节1（可增删） -->
+                <div class="section-item" 
+                     data-action="link" 
+                     data-link="https://8kxr.qzz.io"
+                     data-img="https://picsum.photos/seed/3d1/400/300">
+                    <img class="section-img" src="https://picsum.photos/seed/3d1/400/300" alt="3D小节1">
+                    <div class="section-text">
+                        <h3>3D小节1</h3>
+                        <p>3D小节1：点击跳转到自定义域名主页，体验3D视差效果。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 粒子模块（可删除/移动） -->
+        <div class="module module-particle" data-module-type="particle">
+            <div class="module-title module-title-particle" data-title="粒子特效模块">粒子特效模块</div>
+            <div class="section-list">
+                <!-- 小节1（可增删） -->
+                <div class="section-item" 
+                     data-action="text" 
+                     data-text-original="粒子小节1：基于particles.js实现，支持自定义粒子数量、颜色、运动速度。" 
+                     data-text-change="粒子小节1-切换后：粒子背景可通过JS配置交互事件，如鼠标hover吸引粒子、点击生成粒子爆炸效果。"
+                     data-img="https://picsum.photos/seed/particle1/400/300">
+                    <img class="section-img" src="https://picsum.photos/seed/particle1/400/300" alt="粒子小节1">
+                    <div class="section-text">
+                        <h3>粒子小节1</h3>
+                        <p>粒子小节1：基于particles.js实现，支持自定义粒子数量、颜色、运动速度。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 视差模块（可删除/移动） -->
+        <div class="module module-parallax" data-module-type="parallax">
+            <div class="module-title module-title-parallax" data-title="视差特效模块">视差特效模块</div>
+            <div class="section-list">
+                <!-- 小节1（可增删） -->
+                <div class="section-item" 
+                     data-action="text" 
+                     data-text-original="视差小节1：背景与前景滚动速度不同，营造空间深度感。" 
+                     data-text-change="视差小节1-切换后：视差效果可通过scroll事件动态调整元素translateZ值，支持多层级视差。"
+                     data-img="https://picsum.photos/seed/parallax1/400/300">
+                    <img class="section-img" src="https://picsum.photos/seed/parallax1/400/300" alt="视差小节1">
+                    <div class="section-text">
+                        <h3>视差小节1</h3>
+                        <p>视差小节1：背景与前景滚动速度不同，营造空间深度感。</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- 粒子脚本 + 核心交互脚本 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // 视差滚动效果
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            const parallaxBg = document.querySelector('.parallax-bg');
-            parallaxBg.style.transform = `translateZ(-10px) scale(2) translateY(${scrollY * 0.5}px)`;
+        // 1. 粒子背景配置
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 100, density: { enable: true, value_area: 800 } },
+                color: { value: ['#0ff', '#f0f', '#ff0'] },
+                shape: { type: 'circle' },
+                opacity: { value: 0.6, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#0ff', opacity: 0.2, width: 1 },
+                move: { enable: true, speed: 1, direction: 'none', random: true, straight: false }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'grab' },
+                    onclick: { enable: true, mode: 'push' },
+                    resize: true
+                }
+            },
+            retina_detect: true
         });
 
-        // 3D按钮点击效果
-        const btns3d = document.querySelectorAll('.btn-3d');
-        btns3d.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                // 点击波纹效果
-                const x = e.clientX - e.target.getBoundingClientRect().left;
-                const y = e.clientY - e.target.getBoundingClientRect().top;
-                
-                const ripple = document.createElement('span');
-                ripple.style.position = 'absolute';
-                ripple.style.width = '200px';
-                ripple.style.height = '200px';
-                ripple.style.borderRadius = '50%';
-                ripple.style.background = 'rgba(255,255,255,0.3)';
-                ripple.style.transform = `translate(-50%, -50%) scale(0)`;
-                ripple.style.animation = 'ripple 0.6s linear';
-                ripple.style.left = `${x}px`;
-                ripple.style.top = `${y}px`;
-                ripple.style.pointerEvents = 'none';
-                
-                btn.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 600);
+        // 2. 视差滚动效果
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const parallaxBg = document.getElementById('parallax-bg');
+            parallaxBg.style.transform = `translateZ(-5px) scale(1.2) translateY(${scrollY * 0.3}px)`;
+        });
+
+        // 3. 模块标题点击：切换页面主标题（不跳转）
+        const moduleTitles = document.querySelectorAll('.module-title');
+        const pageMainTitle = document.getElementById('pageMainTitle');
+        moduleTitles.forEach(title => {
+            title.addEventListener('click', () => {
+                // 切换标题文字
+                pageMainTitle.textContent = title.dataset.title;
+                // 切换标题样式
+                const moduleType = title.closest('.module').dataset.moduleType;
+                pageMainTitle.className = '';
+                pageMainTitle.classList.add('page-title', `title-${moduleType}`);
+                // 丝滑滚动到页面顶部
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         });
 
-        // 添加波纹动画
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: translate(-50%, -50%) scale(1);
-                    opacity: 0;
+        // 4. 小节hover：随机添加特效
+        const sectionItems = document.querySelectorAll('.section-item');
+        const effects = ['effect-waterfall', 'effect-loading', 'effect-3d', 'effect-neon', 'effect-gradient'];
+        sectionItems.forEach(item => {
+            // 存储原始样式，用于重置
+            let originalClasses = item.className;
+            
+            // hover时添加随机特效
+            item.addEventListener('mouseenter', () => {
+                // 随机选一个特效
+                const randomEffect = effects[Math.floor(Math.random() * effects.length)];
+                item.classList.add(randomEffect);
+                // 图片放大特效
+                const img = item.querySelector('.section-img');
+                img.style.transform = 'scale(1.1)';
+            });
+
+            // 离开时重置特效
+            item.addEventListener('mouseleave', () => {
+                item.className = originalClasses;
+                const img = item.querySelector('.section-img');
+                img.style.transform = 'scale(1)';
+            });
+
+            // 点击小节：执行跳转/改文字
+            item.addEventListener('click', () => {
+                const action = item.dataset.action;
+                const textEl = item.querySelector('.section-text p');
+                
+                if (action === 'link') {
+                    // 跳转链接
+                    const link = item.dataset.link;
+                    window.open(link, '_blank'); // 新标签页打开
+                } else if (action === 'text') {
+                    // 切换文字
+                    const originalText = item.dataset.textOriginal;
+                    const changeText = item.dataset.textChange;
+                    if (textEl.textContent === originalText) {
+                        textEl.textContent = changeText;
+                    } else {
+                        textEl.textContent = originalText;
+                    }
                 }
+            });
+        });
+
+        // 5. 新增小节的辅助函数（方便你快速添加）
+        function addSectionItem(moduleSelector, options) {
+            /* 
+            使用示例：
+            addSectionItem('.module-neon', {
+                action: 'text',
+                textOriginal: '新小节原始文字',
+                textChange: '新小节切换后文字',
+                img: 'https://picsum.photos/seed/new1/400/300',
+                title: '新小节标题'
+            });
+            */
+            const module = document.querySelector(moduleSelector);
+            const sectionList = module.querySelector('.section-list');
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'section-item';
+            newItem.dataset.action = options.action;
+            
+            if (options.action === 'text') {
+                newItem.dataset.textOriginal = options.textOriginal;
+                newItem.dataset.textChange = options.textChange;
+            } else if (options.action === 'link') {
+                newItem.dataset.link = options.link;
             }
-        `;
-        document.head.appendChild(style);
+            
+            newItem.dataset.img = options.img;
+            
+            newItem.innerHTML = `
+                <img class="section-img" src="${options.img}" alt="${options.title}">
+                <div class="section-text">
+                    <h3>${options.title}</h3>
+                    <p>${options.action === 'text' ? options.textOriginal : options.textOriginal}</p>
+                </div>
+            `;
+            
+            // 添加交互事件（复用现有逻辑）
+            newItem.addEventListener('mouseenter', () => {
+                const randomEffect = effects[Math.floor(Math.random() * effects.length)];
+                newItem.classList.add(randomEffect);
+                newItem.querySelector('.section-img').style.transform = 'scale(1.1)';
+            });
+            
+            newItem.addEventListener('mouseleave', () => {
+                newItem.className = 'section-item';
+                newItem.querySelector('.section-img').style.transform = 'scale(1)';
+            });
+            
+            newItem.addEventListener('click', () => {
+                const textEl = newItem.querySelector('.section-text p');
+                if (options.action === 'link') {
+                    window.open(options.link, '_blank');
+                } else if (options.action === 'text') {
+                    if (textEl.textContent === options.textOriginal) {
+                        textEl.textContent = options.textChange;
+                    } else {
+                        textEl.textContent = options.textOriginal;
+                    }
+                }
+            });
+            
+            sectionList.appendChild(newItem);
+        }
     </script>
 </body>
 </html>
